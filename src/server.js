@@ -1,5 +1,6 @@
 const express = require('express');
 require('dotenv').config();
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db').connectDB;
 const disconnectDB = require('./config/db').disconnectDB;
 
@@ -8,6 +9,7 @@ const disconnectDB = require('./config/db').disconnectDB;
 // Import routes
 const movieRoutes = require('./routes/movieRoutes');
 const authRoutes = require('./routes/authRoutes');
+const watchlistRoutes = require('./routes/watchlistRoutes');
 connectDB();
 
 const app = express();
@@ -15,10 +17,12 @@ const app = express();
 // Body parsing middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Use the imported routes
 app.use('/movies', movieRoutes);
 app.use('/auth', authRoutes);
+app.use('/watchlist', watchlistRoutes);
 
 app.get('/hello', (req, res) => {
     res.json({ message: 'Welcome to the Movie Watchlist API!' });
