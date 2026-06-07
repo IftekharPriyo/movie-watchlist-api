@@ -104,6 +104,38 @@ const updateWatchlistItem = async (req, res) => {
   });
 }
 
+const getWatchlist = async (req, res) => {
+  const watchlistItems = await prisma.watchlistItem.findMany({
+    where: { userId: req.user.id },
+    include: { movie: true },
+  });
+
+  res.status(200).json({
+    status: "success",
+    data: watchlistItems,
+  });
+} 
+
+const getWatchlistItem = async (req, res) => {
+  const { movieId } = req.params;
+  const watchlistItem = await prisma.watchlistItem.findUnique({
+    where: {
+      userId_movieId: { userId: req.user.id, movieId: movieId },  
+    },
+    include: { movie: true },
+  }); 
+  if (!watchlistItem) {
+    return res.status(404).json({ error: "Item not found in watchlist" });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: watchlistItem,
+  });
+}
+
 exports.addToWatchlist = addToWatchlist;
 exports.deleteWatchlistItem = deleteWatchlistItem;
 exports.updateWatchlistItem = updateWatchlistItem;
+exports.getWatchlist = getWatchlist;
+exports.getWatchlistItem = getWatchlistItem;
